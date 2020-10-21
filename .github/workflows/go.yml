@@ -1,0 +1,33 @@
+name: go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build binary
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: set up go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.15
+      id: go
+
+    - name: check out to go module directory
+      uses: actions/checkout@v2
+
+    - name: get dependencies
+      run: |
+        go get -v -t -d ./...
+
+    - name: build
+      run: go build -v .
+
+    - name: test
+      run: go test -v .
