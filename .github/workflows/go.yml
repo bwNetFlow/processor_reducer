@@ -1,10 +1,15 @@
-name: go
+---
+name: build binary
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+    tags:
+      - v*
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
@@ -13,21 +18,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: set up go
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.15
-      id: go
+      - name: set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15
 
-    - name: check out to go module directory
-      uses: actions/checkout@v2
+      - name: check out to go module directory
+        uses: actions/checkout@v2
 
-    - name: get dependencies
-      run: |
-        go get -v -t -d ./...
+      - name: get dependencies
+        run: go get -v -t -d ./...
 
-    - name: build
-      run: go build -v .
+      - name: build
+        run: go build -v .
 
-    - name: test
-      run: go test -v .
+      - name: upload binary as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./processor_reducer
+          name: processor_reducer
+          if-no-files-found: error
+  push:
+    name: create and publish release
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    steps:
+
+      - name: create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+      - name: upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./processor_reducer
+          asset_name: processor_reducer
+          asset_content_type: application/octet-stream
