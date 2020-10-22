@@ -30,6 +30,8 @@ github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6r
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/bwNetFlow/kafkaconnector v0.0.0-20201020151646-77a015fe550e h1:T1rfxdyGKMDLMYk1FzPnd3YzxEB78I5/18YgcRx/IAo=
 github.com/bwNetFlow/kafkaconnector v0.0.0-20201020151646-77a015fe550e/go.mod h1:R6MPTgZjYE07gbK+nYlf6LuJS24/uJn06uVDiv6fQYA=
+github.com/bwNetFlow/kafkaconnector v0.0.0-20201022170711-8e1c6bdf17c1 h1:sQZpxz3OeRgXL5pOQGGl4xk+VwMxtw1yOy5ZAqeD6vc=
+github.com/bwNetFlow/kafkaconnector v0.0.0-20201022170711-8e1c6bdf17c1/go.mod h1:R6MPTgZjYE07gbK+nYlf6LuJS24/uJn06uVDiv6fQYA=
 github.com/bwNetFlow/protobuf/go v0.0.0-20200514124336-bf8695918c8c h1:ApSpSmY1BMiKstQ+ZJ94viKdjTWGg7sWw5CO2UGcPKo=
 github.com/bwNetFlow/protobuf/go v0.0.0-20200514124336-bf8695918c8c/go.mod h1:MhZaptdapMCx+cAla29K+uuVIL66PW2BcTPpueWq+aA=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=

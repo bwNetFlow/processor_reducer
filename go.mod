@@ -3,7 +3,7 @@ module github.com/bwNetFlow/processor_reducer
 go 1.15
 
 require (
-	github.com/bwNetFlow/kafkaconnector v0.0.0-20201020151646-77a015fe550e
+	github.com/bwNetFlow/kafkaconnector v0.0.0-20201022170711-8e1c6bdf17c1
 	github.com/bwNetFlow/protobuf/go v0.0.0-20200514124336-bf8695918c8c
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/klauspost/compress v1.11.1 // indirect
