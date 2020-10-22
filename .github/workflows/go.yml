@@ -35,8 +35,8 @@ jobs:
       - name: upload binary as artifact
         uses: actions/upload-artifact@v2
         with:
-          path: ./processor_reducer
-          name: processor_reducer
+          path: ./${{ github.event.repository.name }}
+          name: ${{ github.event.repository.name }}
           if-no-files-found: error
 
   release:
@@ -60,7 +60,7 @@ jobs:
       - name: get artifact from standard build
         uses: actions/download-artifact@v2
         with:
-          name: processor_reducer
+          name: ${{ github.event.repository.name }}
 
       - name: upload release asset
         uses: actions/upload-release-asset@v1
@@ -68,6 +68,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./processor_reducer
-          asset_name: processor_reducer
+          asset_path: ./${{ github.event.repository.name }}
+          asset_name: ${{ github.event.repository.name }}
           asset_content_type: application/octet-stream
