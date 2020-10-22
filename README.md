@@ -1,5 +1,4 @@
-Reducer
-=
+# Reducer
 
 This is the Reducer component of the [bwNetFlow][bwNetFlow] platform. It
 supports taking protobuf-encoded [flow messages][protobuf] from a specified
@@ -14,8 +13,7 @@ the API.
 
 It also supports some experimental, subnet-based anonymisation.
 
-Usage
-==
+## Usage
 
 The simplest call could look like this, which would start the reducer process
 with TLS encryption and SASL auth enabled and all outputs working.
