@@ -4,15 +4,12 @@ import (
 	"flag"
 	"io"
 	"log"
-	"net"
 	"os"
 	"os/signal"
-	"reflect"
-	"strings"
 	"time"
 
 	kafka "github.com/bwNetFlow/kafkaconnector"
-	flow "github.com/bwNetFlow/protobuf/go"
+	"github.com/bwNetFlow/processor_reducer/reducer"
 )
 
 var (
@@ -93,6 +90,11 @@ func main() {
 	}
 	defer kafkaConn.Close()
 
+	red := reducer.Reducer{
+		LimitFields: *limitFields,
+		AnonFields:  *anonFields,
+	}
+
 	// receive flows in a loop
 	for {
 		select {
@@ -102,48 +104,7 @@ func main() {
 				return
 			}
 
-			reflected_original := reflect.ValueOf(original) // immutable
-			reduced := flow.FlowMessage{}
-			reflected_reduced := reflect.ValueOf(&reduced) // mutable
-			// limit stuff
-			for _, fieldname := range strings.Split(*limitFields, ",") {
-				if fieldname == "" {
-					log.Println("fields.limit unset, terminating...")
-					return // case limitFields == ''
-				}
-				original_field := reflect.Indirect(reflected_original).FieldByName(fieldname)
-				reduced_field := reflected_reduced.Elem().FieldByName(fieldname)
-				if original_field.IsValid() && reduced_field.IsValid() {
-					reduced_field.Set(original_field)
-				} else {
-					log.Printf("Flow messages do not have a field named '%s'", fieldname)
-				}
-			}
-			// anon stuff
-			for _, fieldname := range strings.Split(*anonFields, ",") {
-				if fieldname == "" {
-					continue // case anonFields == ''
-				}
-				reduced_field := reflected_reduced.Elem().FieldByName(fieldname)
-				if reduced_field.IsValid() {
-					if reduced_field.Type() == reflect.TypeOf([]uint8{}) {
-						raw := reduced_field.Interface().([]uint8)
-						address := net.IP(raw)
-						raw[len(raw)-1] = 0
-						if address.To4() == nil {
-							for i := 2; i <= 8; i++ {
-								raw[len(raw)-i] = 0
-							}
-						}
-						reduced_field.Set(reflect.ValueOf(raw))
-					} else {
-						log.Printf("Field '%s' has type '%s'. Anonymization is only supported for IP types.", fieldname, reduced_field.Type())
-					}
-				} else {
-					log.Printf("The reduced flow message did not have a field named '%s' to anonymize.", fieldname)
-				}
-			}
-			kafkaConn.ProducerChannel(*kafkaOutTopic) <- &reduced
+			kafkaConn.ProducerChannel(*kafkaOutTopic) <- red.Process(original)
 		case <-signals:
 			return
 		}
