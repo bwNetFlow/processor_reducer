@@ -9,6 +9,13 @@ import (
 	bwmessage "github.com/bwNetFlow/protobuf/go"
 )
 
+var (
+	// Masks the last byte.
+	IPv4Mask = net.IPv4Mask(0, 0, 0, 255)
+	// Masks the last 64 bits.
+	IPv6Mask = net.CIDRMask(64, 128)
+)
+
 // Reducer stores the reduction specific configuration.
 type Reducer struct {
 	// Fields which will be kept
@@ -45,13 +52,13 @@ func (r *Reducer) Process(msg *bwmessage.FlowMessage) *bwmessage.FlowMessage {
 			if reduced_field.Type() == reflect.TypeOf([]uint8{}) {
 				raw := reduced_field.Interface().([]uint8)
 				address := net.IP(raw)
-				raw[len(raw)-1] = 0
-				if address.To4() == nil {
-					for i := 2; i <= 8; i++ {
-						raw[len(raw)-i] = 0
-					}
+				var maskedAddress net.IP
+				if v4Addr := address.To4(); v4Addr != nil {
+					maskedAddress = v4Addr.Mask(IPv4Mask)
+				} else {
+					maskedAddress = address.Mask(IPv6Mask)
 				}
-				reduced_field.Set(reflect.ValueOf(raw))
+				reduced_field.Set(reflect.ValueOf(maskedAddress))
 			} else {
 				log.Printf("Field '%s' has type '%s'. Anonymization is only supported for IP types.", fieldname, reduced_field.Type())
 			}
